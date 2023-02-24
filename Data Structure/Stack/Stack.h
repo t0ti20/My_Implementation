@@ -17,7 +17,7 @@
 *****************************************/
 /*----------- Configuration ------------*/
 #define storage_type u8
-#define stack_size 3
+#define stack_size 20
 /*------------- Type Defs --------------*/
 typedef struct stack_t {storage_type elements[stack_size+1];u8 top;}stack_t;
 typedef enum stack_error 

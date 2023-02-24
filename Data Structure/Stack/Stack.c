@@ -17,14 +17,12 @@ stack_t stack;
 int main(void)
 {
      Stack_Initialization(&stack);
-     u8 x=10,y=20,z=11,m=14;
-     printf("%d\n\n",Stack_Push(&stack,z));
-     printf("%d\n\n",Stack_Push(&stack,z));
-     printf("%d\n\n",Stack_Push(&stack,z));
-     printf("%d\n\n",Stack_Pop(&stack,&m));
-     printf("%d\n",m);
+     for(u8 counter=0;counter<10;counter++)Stack_Push(&stack,counter);
      Stack_Print(&stack);
      printf("%d\n",Stack_Is_Empty(&stack));
+     u8 x;
+     for(u8 counter=0;counter<5;counter++)Stack_Pop(&stack,&x);
+     Stack_Print(&stack);
      return 0;
 }
 /********************************************************************
