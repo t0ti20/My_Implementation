@@ -36,8 +36,13 @@ int main(void)
 ********************************************************************/
 stack_error Stack_Initialization(stack_t *my_stack)
 {
+     u8 flag=Stack_Ok;
      my_stack->top = False;
-     return Stack_Ok;
+#if memory_mode == Run_Time
+     my_stack->elements=(storage_type*)calloc((my_stack->top+1),sizeof(storage_type));
+     if(my_stack->elements==NULL)flag=Stack_Allocation_Error;
+#endif
+     return flag;
 }
 /********************************************************************
 * Syntax          : stack_error Stack_Push(stack_t *my_stack,storage_type data)
@@ -51,12 +56,23 @@ stack_error Stack_Initialization(stack_t *my_stack)
 stack_error Stack_Push(stack_t *my_stack,storage_type data)
 {
      u8 flag=Stack_Full;
+#if memory_mode == Pre_Processor
      if((my_stack->top)<stack_size)
      {
           my_stack->elements[my_stack->top]=data;
           my_stack->top++;
           flag=Stack_Ok;
      }
+#else
+     my_stack->elements=realloc(my_stack->elements,(my_stack->top+1)*sizeof(storage_type));
+     if(my_stack->elements!=NULL)
+     {
+          my_stack->elements[my_stack->top]=data;
+          my_stack->top++;
+          flag=Stack_Ok;
+     }
+     else flag=Stack_Allocation_Error;
+#endif
      return flag;
 }
 /********************************************************************
@@ -70,8 +86,12 @@ stack_error Stack_Push(stack_t *my_stack,storage_type data)
 ********************************************************************/
 stack_error Stack_Print(stack_t *my_stack)
 {
-     u8 flag=my_stack->top?Stack_Empty:Stack_Ok;
-     for(u8 i=0 ; i<my_stack->top ;i++)printf("[%d] = %d\n",i,my_stack->elements[i]);
+     u8 flag=Stack_Empty;
+     if(my_stack->elements>ZERO)
+     {
+          for(u8 i=0 ; i<my_stack->top ;i++)printf("[%d] = %d\n",i,my_stack->elements[i]);
+          flag=Stack_Ok;
+     }
      return flag;
 }
 /********************************************************************
@@ -85,7 +105,8 @@ stack_error Stack_Print(stack_t *my_stack)
 ********************************************************************/
 stack_error Stack_Pop(stack_t *my_stack,storage_type *data)
 {
-     int flag=Stack_Empty;
+     u8 flag=Stack_Empty;
+#if memory_mode == Pre_Processor
      if(my_stack->top>False)
      {
           *data=my_stack->elements[(my_stack->top)-1];
@@ -93,6 +114,17 @@ stack_error Stack_Pop(stack_t *my_stack,storage_type *data)
           (my_stack->top)--;
           flag=Stack_Ok;
      }
+#else
+     *data=my_stack->elements[my_stack->top-1];
+     my_stack->elements=realloc(my_stack->elements,(my_stack->top)*sizeof(storage_type));
+     if(my_stack->top==False);
+     else if(my_stack->elements!=NULL)
+     {
+          my_stack->top--;
+          flag=Stack_Ok;
+     }
+     else flag=Stack_Allocation_Error;
+#endif
      return flag;
 }
 /********************************************************************
