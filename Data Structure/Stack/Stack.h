@@ -17,7 +17,7 @@
 *****************************************/
 /*----------- Configuration ------------*/
 #define memory_mode Run_Time                                          /*(Run_Time) (Pre_Processor)*/
-#define storage_type u8                                               /*(u8) (u16) (u32) (s8) (...)*/
+#define storage_type f32                                              /*(u8) (u16) (u32) (s8) (...)*/
 #define stack_size 20                                                 /*When Chosing (Pre_Processor) Max Number Of Stack*/
 /*****************************************
 ----------    GLOBAL DATA     ------------

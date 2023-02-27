@@ -2,7 +2,7 @@
  *  FILE DESCRIPTION
 -----------------------
  *  Owner:  Khaled El-Sayed @t0ti20
- *  File:  Stack.h
+ *  File:  Stack.c
  *  Module:  Data Structure/Stack
  *  Description:  Stack Implementation
 *******************************************************************/
@@ -20,7 +20,7 @@ int main(void)
      for(u8 counter=0;counter<10;counter++)Stack_Push(&stack,counter);
      Stack_Print(&stack);
      printf("%d\n",Stack_Is_Empty(&stack));
-     u8 x;
+     f32 x;
      for(u8 counter=0;counter<5;counter++)Stack_Pop(&stack,&x);
      Stack_Print(&stack);
      return 0;
@@ -89,7 +89,7 @@ stack_error Stack_Print(stack_t *my_stack)
      u8 flag=Stack_Empty;
      if(my_stack->elements>ZERO)
      {
-          for(u8 i=0 ; i<my_stack->top ;i++)printf("[%d] = %d\n",i,my_stack->elements[i]);
+          for(u8 i=0 ; i<my_stack->top ;i++)printf("[%d] = %f\n",i,my_stack->elements[i]);
           flag=Stack_Ok;
      }
      return flag;
