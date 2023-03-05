@@ -14,16 +14,39 @@
 ----------    GLOBAL DATA     ------------
 *****************************************/
 stack_t stack;
+void print(storage_type element)
+{
+     printf("%f\n",element);
+}
 int main(void)
 {
      Stack_Initialization(&stack);
      for(u8 counter=0;counter<10;counter++)Stack_Push(&stack,counter);
      Stack_Print(&stack);
      printf("%d\n",Stack_Is_Empty(&stack));
+     Stack_Traverse(&stack,print);
      f32 x;
      for(u8 counter=0;counter<5;counter++)Stack_Pop(&stack,&x);
      Stack_Print(&stack);
      return 0;
+}
+/********************************************************************
+* Syntax          : Stack_Traverse(stack_t *my_stack,void (*function)(storage_type))
+* Description     : Make Any Functions On The Stack
+* Sync-Async      : *
+* Reentrancy      : *
+* Parameters (in) : (Ptr To Stack) (Ptr To Function)
+* Parameters (out): None
+* Return value:   : stack_error
+********************************************************************/
+stack_error Stack_Traverse(stack_t *my_stack,void (*function)(storage_type))
+{
+     stack_error flag=Stack_Ok;
+     for(u8 counter=0;counter<(my_stack->top);counter++)
+     {
+          function(my_stack->elements[counter]);
+     }
+     return flag;
 }
 /********************************************************************
 * Syntax          : stack_error Stack_Initialization(stack_t *my_stack)
@@ -36,7 +59,7 @@ int main(void)
 ********************************************************************/
 stack_error Stack_Initialization(stack_t *my_stack)
 {
-     u8 flag=Stack_Ok;
+     stack_error flag=Stack_Ok;
      my_stack->top = False;
 #if memory_mode == Run_Time
      my_stack->elements=(storage_type*)calloc((my_stack->top+1),sizeof(storage_type));
@@ -55,7 +78,7 @@ stack_error Stack_Initialization(stack_t *my_stack)
 ********************************************************************/
 stack_error Stack_Push(stack_t *my_stack,storage_type data)
 {
-     u8 flag=Stack_Full;
+     stack_error flag=Stack_Full;
 #if memory_mode == Pre_Processor
      if((my_stack->top)<stack_size)
      {
@@ -86,7 +109,7 @@ stack_error Stack_Push(stack_t *my_stack,storage_type data)
 ********************************************************************/
 stack_error Stack_Print(stack_t *my_stack)
 {
-     u8 flag=Stack_Empty;
+     stack_error flag=Stack_Empty;
      if(my_stack->elements>ZERO)
      {
           for(u8 i=0 ; i<my_stack->top ;i++)printf("[%d] = %f\n",i,my_stack->elements[i]);
@@ -105,7 +128,7 @@ stack_error Stack_Print(stack_t *my_stack)
 ********************************************************************/
 stack_error Stack_Pop(stack_t *my_stack,storage_type *data)
 {
-     u8 flag=Stack_Empty;
+     stack_error flag=Stack_Empty;
 #if memory_mode == Pre_Processor
      if(my_stack->top>False)
      {

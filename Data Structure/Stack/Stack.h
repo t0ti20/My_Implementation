@@ -45,6 +45,7 @@ stack_error Stack_Push(stack_t *my_stack,storage_type data);
 stack_error Stack_Print(stack_t *my_stack);
 stack_error Stack_Pop(stack_t *my_stack,storage_type *data);
 stack_error Stack_Is_Empty(stack_t *my_stack);
+stack_error Stack_Traverse(stack_t *my_stack,void (*function)(storage_type));
 #endif
 /********************************************************************
  *  END OF FILE: Stack.h
