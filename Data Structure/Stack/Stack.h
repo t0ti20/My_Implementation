@@ -23,8 +23,6 @@
 ----------    GLOBAL DATA     ------------
 *****************************************/
 /*------------- Type Defs --------------*/
-#define Run_Time               0
-#define Pre_Processor          1
 #if memory_mode == Pre_Processor
 typedef struct stack_t {storage_type elements[stack_size+1];u8 top;}stack_t;
 #else
@@ -39,6 +37,8 @@ typedef enum stack_error
      Stack_Empty               =2,
      Stack_Allocation_Error    =3,
 }stack_error;
+#define Run_Time               0
+#define Pre_Processor          1
 /*----------- Functins To Use ---------*/
 stack_error Stack_Initialization(stack_t *my_stack);
 stack_error Stack_Push(stack_t *my_stack,storage_type data);
