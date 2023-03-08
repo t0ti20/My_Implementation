@@ -16,12 +16,12 @@
 ----------   Configuration    ------------
 *****************************************/
 #define storage_type          u8
-#define queue_size            5
+#define queue_size            2
 /*****************************************
 ----------    GLOBAL DATA     ------------
 *****************************************/
 /*------------- Type Defs --------------*/
-typedef struct queue_t {u8 front;storage_type elements[queue_size];u8 rear;}queue_t;
+typedef struct queue_t {s8 front;storage_type elements[queue_size];s8 rear;u8 size;}queue_t;
 typedef enum queue_error 
 {
      Queue_Full                =0,
@@ -31,12 +31,12 @@ typedef enum queue_error
 }queue_error;
 /*----------- Functins To Use ---------*/
 queue_error Queue_Initialization(queue_t *my_queue);
-queue_error Queue_Print(queue_t *my_queue);
-queue_error Queue_Is_Empty(queue_t *my_queue);
+queue_error Queue_Clear(queue_t *my_queue);
 queue_error Queue_Enqueue(queue_t *my_queue,storage_type data);
 queue_error Queue_Dequeue(queue_t *my_queue,storage_type *data);
 queue_error Queue_Traverse(queue_t *my_queue,void (*function)(storage_type));
-static void Queue_Rearrange(queue_t *my_queue);
+s8 Queue_Is_Empty(queue_t *my_queue);
+s8 Queue_Is_Full(queue_t *my_queue);
 #endif
 /********************************************************************
  *  END OF FILE: Queue.h
