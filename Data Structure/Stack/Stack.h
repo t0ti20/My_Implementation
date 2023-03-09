@@ -16,36 +16,38 @@
 ----------   Configuration    ------------
 *****************************************/
 /*----------- Configuration ------------*/
-#define memory_mode Run_Time                                          /*(Run_Time) (Pre_Processor)*/
-#define storage_type f32                                              /*(u8) (u16) (u32) (s8) (...)*/
-#define stack_size 20                                                 /*When Chosing (Pre_Processor) Max Number Of Stack*/
+#define Memory_Mode Array                                             /*(Linked_List) (Array)*/
+#define storage_type u8                                               /*(u8) (u16) (u32) (s8) (...)*/
+#define stack_size 5                                                  /*When Chosing (Pre_Processor) Max Number Of Stack*/
 /*****************************************
 ----------    GLOBAL DATA     ------------
 *****************************************/
 /*------------- Type Defs --------------*/
-#if memory_mode == Pre_Processor
-typedef struct stack_t {storage_type elements[stack_size+1];u8 top;}stack_t;
-#else
-void *calloc(size_t nitems,size_t size);
-void *realloc(void *ptr,size_t size);
-typedef struct stack_t {storage_type *elements;u8 top;}stack_t;
-#endif
-typedef enum stack_error 
+typedef enum stack_error
 {
      Stack_Full                =0,
      Stack_Ok                  =1,
      Stack_Empty               =2,
      Stack_Allocation_Error    =3,
 }stack_error;
-#define Run_Time               0
-#define Pre_Processor          1
+#define Array                1
+#define Linked_List          2
+#if Memory_Mode == Array
+typedef struct stack_t {storage_type elements[stack_size+1];u8 top;}stack_t;
+#else
+typedef struct stack_node_t {struct stack_node_t *next_node;storage_type data;}stack_node_t;
+typedef struct stack_t {stack_node_t *top;u8 size;}stack_t;
+#endif
 /*----------- Functins To Use ---------*/
+stack_error Stack_Clear(stack_t *my_stack);
 stack_error Stack_Initialization(stack_t *my_stack);
 stack_error Stack_Push(stack_t *my_stack,storage_type data);
-stack_error Stack_Print(stack_t *my_stack);
 stack_error Stack_Pop(stack_t *my_stack,storage_type *data);
-stack_error Stack_Is_Empty(stack_t *my_stack);
 stack_error Stack_Traverse(stack_t *my_stack,void (*function)(storage_type));
+s8 Stack_Is_Empty(stack_t *my_stack);
+s8 Stack_Is_Full(stack_t *my_stack);
+void free(void *ptr);
+void *malloc(size_t size);
 #endif
 /********************************************************************
  *  END OF FILE: Stack.h

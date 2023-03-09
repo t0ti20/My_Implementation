@@ -28,14 +28,14 @@ typedef enum list_error
      List_Ok                  =1
 }list_error;
 /*----------- Functins To Use ---------*/
-void free(void *ptr);
-void *malloc(size_t size);
 list_error Linked_List_Print(list_t *my_list);
 list_error Linked_List_Initialization(list_t *my_list);
 list_error Linked_List_Append(list_t *my_list,storage_type data);
 list_error Linked_List_Delete_Node(list_t *my_list,u8 node_number);
 list_error Linked_List_Insert(list_t *my_list,u8 node_number,storage_type data);
 list_error Linked_List_Get_Node(list_t *my_list,u8 node_number,storage_type *data);
+void free(void *ptr);
+void *malloc(size_t size);
 #endif
 /********************************************************************
  *  END OF FILE: Linked_List.h
