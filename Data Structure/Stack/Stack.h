@@ -46,8 +46,8 @@ stack_error Stack_Pop(stack_t *my_stack,storage_type *data);
 stack_error Stack_Traverse(stack_t *my_stack,void (*function)(storage_type));
 s8 Stack_Is_Empty(stack_t *my_stack);
 s8 Stack_Is_Full(stack_t *my_stack);
-void free(void *ptr);
 void *malloc(size_t size);
+void free(void *ptr);
 #endif
 /********************************************************************
  *  END OF FILE: Stack.h

@@ -13,28 +13,6 @@
 /*****************************************
 ----------    GLOBAL DATA     ------------
 *****************************************/
-queue_t queue;
-void print(storage_type element)
-{
-     printf("- %d\n",element);
-}
-int main(void)
-{
-     u8 x;
-     printf("%d\n",Queue_Initialization(&queue));
-     printf("%d\n",Queue_Dequeue(&queue,&x));
-     printf("%d\n",Queue_Enqueue(&queue,11));
-     printf("%d\n",Queue_Enqueue(&queue,12));
-     printf("%d\n",Queue_Enqueue(&queue,12));
-     printf("%d\n",Queue_Dequeue(&queue,&x));
-     printf("%d\n",Queue_Enqueue(&queue,12));
-     printf("%d\n",Queue_Enqueue(&queue,12));
-     printf("%d\n",Queue_Dequeue(&queue,&x));
-     printf("%d\n",Queue_Dequeue(&queue,&x));
-     printf("%d\n\n",Queue_Dequeue(&queue,&x));
-     Queue_Traverse(&queue,print);
-     return 0;
-}
 /********************************************************************
 * Syntax          : queue_error Queue_Traverse(queue_t *my_queue,void (*function)(storage_type))
 * Description     : Traverse Function To Queue
@@ -47,6 +25,7 @@ int main(void)
 queue_error Queue_Traverse(queue_t *my_queue,void (*function)(storage_type))
 {
      queue_error flag=Queue_Ok;
+#if Memory_Mode == Array
      if((my_queue->size))
      {
           for(u8 Index=my_queue->front,Counter=ZERO;Counter<my_queue->size;Counter++)
@@ -56,6 +35,16 @@ queue_error Queue_Traverse(queue_t *my_queue,void (*function)(storage_type))
           }
      }
      else flag=Queue_Empty;
+#else
+     if((my_queue->size))
+     {
+          for(queue_node_t *node=my_queue->front;node;node=node->next_node)
+          {
+               function(node->data);
+          }
+     }
+     else flag=Queue_Empty;
+#endif
      return flag;
 }
 /********************************************************************
@@ -70,6 +59,7 @@ queue_error Queue_Traverse(queue_t *my_queue,void (*function)(storage_type))
 queue_error Queue_Enqueue(queue_t *my_queue,storage_type data)
 {
      queue_error flag=Queue_Ok;
+#if Memory_Mode == Array
      if((my_queue->size)<queue_size)
      {
           my_queue->rear=(my_queue->rear+ONE)%queue_size;
@@ -77,6 +67,25 @@ queue_error Queue_Enqueue(queue_t *my_queue,storage_type data)
           my_queue->size++;
      }
      else flag=Queue_Full;
+#else
+     queue_node_t *node=(queue_node_t *)malloc(sizeof(queue_node_t));
+     if(node)
+     {
+          node->next_node=NULL;
+          node->data=data;
+          if(!(my_queue->rear))
+          {
+               my_queue->front=node;
+          }
+          else
+          {
+               my_queue->rear->next_node=node; 
+          }
+          my_queue->rear=node;
+          my_queue->size++;
+     }
+     else flag=Queue_Allocation_Error;
+#endif
      return flag;
 }
 /********************************************************************
@@ -91,6 +100,7 @@ queue_error Queue_Enqueue(queue_t *my_queue,storage_type data)
 queue_error Queue_Dequeue(queue_t *my_queue,storage_type *data)
 {
      queue_error flag=Queue_Ok;
+#if Memory_Mode == Array
      if(my_queue->size)
      {
           *data=my_queue->elements[my_queue->front];
@@ -98,6 +108,22 @@ queue_error Queue_Dequeue(queue_t *my_queue,storage_type *data)
           my_queue->size--;
      }
      else flag=Queue_Empty;
+#else
+     if(my_queue->size)
+     {
+          queue_node_t *node=my_queue->front;
+          *data=node->data;
+          my_queue->front=node->next_node;
+          free(node);
+          if(!(my_queue->front))
+          {
+               my_queue->rear=NULL;
+          }
+          my_queue->size--;
+     }
+     else flag=Queue_Empty;
+
+#endif
      return flag;
 }
 /********************************************************************
@@ -112,14 +138,20 @@ queue_error Queue_Dequeue(queue_t *my_queue,storage_type *data)
 queue_error Queue_Initialization(queue_t *my_queue)
 {
      queue_error flag=Queue_Ok;
+#if Memory_Mode == Array
      my_queue->size=ZERO;
      my_queue->front=ZERO;
      my_queue->rear=-ONE;
+#else
+     my_queue->front=NULL;
+     my_queue->rear=NULL;
+     my_queue->size=ZERO;
+#endif
      return flag;
 }
 /********************************************************************
-* Syntax          : queue_error Queue_Initialization(queue_t *my_queue)
-* Description     : Initialize Queue
+* Syntax          : queue_error Queue_Clear(queue_t *my_queue)
+* Description     : Clear All Elements In Queue
 * Sync-Async      : *
 * Reentrancy      : *
 * Parameters (in) : (Ptr To Queue)
@@ -128,16 +160,26 @@ queue_error Queue_Initialization(queue_t *my_queue)
 ********************************************************************/
 queue_error Queue_Clear(queue_t *my_queue)
 {
+     #if Memory_Mode != Array
+     if((my_queue->size))
+     {
+          for(queue_node_t *node=my_queue->front;node;node=my_queue->front)
+          {
+               my_queue->front=node->next_node;
+               free(node);
+          }
+     }
+     #endif
      return Queue_Initialization(my_queue);
 }
 /********************************************************************
-* Syntax          : queue_error Queue_Is_Empty(queue_t *my_queue)
+* Syntax          : s8 Queue_Is_Empty(queue_t *my_queue)
 * Description     : Check If Queue Is Empty
 * Sync-Async      : *
 * Reentrancy      : *
 * Parameters (in) : (Ptr To Queue)
 * Parameters (out): None
-* Return value:   : stack_error
+* Return value:   : s8 (True) (False)
 ********************************************************************/
 s8 Queue_Is_Empty(queue_t *my_queue)
 {
@@ -150,9 +192,16 @@ s8 Queue_Is_Empty(queue_t *my_queue)
 * Reentrancy      : *
 * Parameters (in) : (Ptr To Queue)
 * Parameters (out): None
-* Return value:   : stack_error
+* Return value:   : s8 (True) (False)
 ********************************************************************/
 s8 Queue_Is_Full(queue_t *my_queue)
 {
+     #if Memory_Mode == Array
      return (my_queue->size==queue_size);
+     #else
+     return False;
+     #endif
 }
+/********************************************************************
+ *  END OF FILE: Queue.c
+********************************************************************/
